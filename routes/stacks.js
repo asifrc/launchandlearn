@@ -39,7 +39,21 @@ var createStack = function(req, res) {
   });
 };
 
+var deleteStack = function(req, res) {
+  var params = {
+    "StackName": stackName,
+  };
+  cloudformation.deleteStack(params, function(err, data) {
+    if (err) {
+      respond(res.status(502), err);
+    }
+    else {
+      respond(res.status(202), data);
+    }
+  });
+};
 
 router.post('/', createStack);
+router.delete('/', deleteStack);
 
 module.exports = router;
