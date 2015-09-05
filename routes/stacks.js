@@ -7,6 +7,9 @@ var cfConfig = {
   region: "us-west-2"
 };
 
+var appName = "LaunchAndLearn";
+var stackName = appName + "Test";
+
 var cloudformation = new AWS.CloudFormation(cfConfig);
 
 var respond = function(res, result) {
@@ -17,12 +20,12 @@ var respond = function(res, result) {
 
 var createStack = function(req, res) {
   var params = {
-    "StackName": "LaunchVMTest",
+    "StackName": stackName,
     "TemplateBody": JSON.stringify(template),
     "Tags": [
       {
         "Key": "source",
-        "Value": "LaunchVM"
+        "Value": appName
       }
     ]
   };
