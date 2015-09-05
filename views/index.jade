@@ -1,11 +1,30 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  button#btnCreate Launch VM
-  button#btnDelete Delete VM
-  button#btnGetInfo Get Info
-  #dvStatus
+  .container
+    .row
+      h1= title
+    .row
+      p Welcome to #{title}
+    .row
+      button#btnCreate.button-primary Launch VM
+      button#btnDelete Delete VM
+      button#btnGetInfo Get Info
+      #dvStatus
+    .row
+      table.one-third.column
+        thead
+          tr
+            th(colspan="2") Info:
+        tbody
+          tr
+            td IP Address
+            td
+          tr
+            td Username
+            td
+          tr
+            td Password
+            td
 
   script(type='text/javascript', src='/javascripts/index.js')
