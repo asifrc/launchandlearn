@@ -1,0 +1,69 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "Workstation": {
+      "Type": "AWS::EC2::Instance",
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "config" : {
+            "packages" : {
+              "msi": {
+                "chefdk": "https://s3-us-west-2.amazonaws.com/twawsvbs/installs/chefdk-0.6.2-1.msi"
+              }
+            },
+            "files": {
+              "C:\\installs\\AtomSetup.exe": {
+                "source": "https://s3-us-west-2.amazonaws.com/twawsvbs/installs/AtomSetup.exe"
+              },
+              "C:\\installs\\googlechromestandaloneenterprise.msi": {
+                "source": "https://s3-us-west-2.amazonaws.com/twawsvbs/installs/googlechromestandaloneenterprise.msi"
+              }
+            }
+          }
+        }
+      },
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "SecurityGroupIds" : [ "sg-71d93415" ],
+        "KeyName" : "NAarchoud",
+        "ImageId": "ami-4dbcb67d",
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [ "", [
+              "<powershell> \n",
+              "$user=\"launchvm\" \n",
+              "$password=\"Password1\" \n",
+              "\"[System Access]\" | out-file c:\\delete.cfg \n",
+              "\"PasswordComplexity = 0\" | out-file c:\\delete.cfg -append \n",
+              "\"[Version]\" | out-file c:\\delete.cfg -append \n",
+              "'signature=\"$CHICAGO$\"' | out-file c:\\delete.cfg -append \n",
+              "secedit /configure /db C:\\Windows\\security\new.sdb /cfg c:\\delete.cfg /areas SECURITYPOLICY \n",
+              "del c:\\delete.cfg \n",
+              "net user /add $user $password; \n",
+              "net localgroup Administrators /add $user; \n",
+              "winrm quickconfig -q \n",
+              "winrm set winrm/config/winrs '@{MaxMemoryPerShellMB=\"300\"}' \n",
+              "winrm set winrm/config '@{MaxTimeoutms=\"1800000\"}' \n",
+              "winrm set winrm/config/service '@{AllowUnencrypted=\"true\"}' \n",
+              "winrm set winrm/config/service/auth '@{Basic=\"true\"}' \n",
+              "netsh advfirewall firewall set rule name=\"Windows Remote Management (HTTP-In)\" profile=public protocol=tcp localport=5985 remoteip=localsubnet new remoteip=any \n",
+              "cfn-init.exe -v -s ", { "Ref" : "AWS::StackName" }, " -r Workstation", " --region ", { "Ref" : "AWS::Region" }, "\n",
+              "</powershell>"
+            ]
+            ]
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "WorkstationDNS": {
+      "Value": { "Fn::GetAtt" : [ "Workstation", "PublicDnsName" ]},
+      "Description": "Workstation IP Address"
+    },
+    "WorkstationIP": {
+      "Value": { "Fn::GetAtt" : [ "Workstation", "PublicIp" ]},
+      "Description": "Workstation IP Address"
+    }
+  }
+}

@@ -8,7 +8,7 @@ var createStack = function() {
   $request.done(function(data) {
     asif = data;
     console.log(data);
-    alert("Success!");
+    displayStatus("Creating New VM...");
   });
   $request.fail(function(error) {
     asif = error;
