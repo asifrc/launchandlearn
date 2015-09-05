@@ -53,17 +53,24 @@ var deleteStack = function(req, res) {
   });
 };
 
+var formatOutputs = function(outputs) {
+  var formattedOutput = {};
+  outputs.forEach(function(output) {
+    formattedOutput[output["OutputKey"]] =  output["OutputValue"]
+  });
+  return formattedOutput;
+}
+
 var describeStack = function(req, res) {
   var params = {
     "StackName": stackName,
   };
   cloudformation.describeStacks(params, function(err, data) {
-    if (err) {
-      respond(res.status(200), "DOES_NOT_EXIST");
-    }
-    else {
-      respond(res.status(200), data["Stacks"][0]["StackStatus"]);
-    }
+    var stack = {
+      status: (err) ? "DOES_NOT_EXIST" : data["Stacks"][0]["StackStatus"],
+      outputs: (err) ? [] : formatOutputs(data["Stacks"][0]["Outputs"]),
+    };
+    respond(res.status(200), stack);
   });
 };
 

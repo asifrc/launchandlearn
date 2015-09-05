@@ -4,8 +4,12 @@ var displayStatus = function(message) {
   $('#dvStatus').html(message);
 };
 
-var stackCreated = function(status) {
-  displayStatus("Stack Created! " + status);
+var stackCreated = function(stack) {
+  var message = "<p>Stack Created!</p>\n";
+  message += "<p>IP: " + stack.outputs["WorkstationIP"] + "</p>";
+  message += "<p>Username: " + stack.outputs["Username"] + "</p>";
+  message += "<p>Password: " + stack.outputs["Password"] + "</p>";
+  displayStatus(message);
 };
 
 var stackDeleted = function(status) {
@@ -14,19 +18,19 @@ var stackDeleted = function(status) {
 
 
 var pollForCreation = function() {
-  $.get('/stacks', function(status) {
-    if (status === "CREATE_IN_PROGRESS") {
+  $.get('/stacks', function(stack) {
+    if (stack.status === "CREATE_IN_PROGRESS") {
       setTimeout(pollForCreation, POLL_TIMEOUT);
     }
     else {
-      stackCreated(status);
+      stackCreated(stack);
     }
   });
 };
 
 var pollForDeletion = function() {
-  $.get('/stacks', function(status) {
-    if (status === "DOES_NOT_EXIST") {
+  $.get('/stacks', function(stack) {
+    if (stack.status === "DOES_NOT_EXIST") {
       stackDeleted(status);
     }
     else {
