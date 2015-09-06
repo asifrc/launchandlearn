@@ -1,7 +1,8 @@
 var POLL_TIMEOUT = 10000;
 
 var app = {
-  message: ""
+  message: "",
+  messageSpinner: false
 };
 
 var Stack = function() {
@@ -21,21 +22,24 @@ var Stack = function() {
       Password: null
     });
   };
+
+  self.clearOutputs();
 }
 var stack = new Stack();
 
-var displayStatus = function(html) {
+var displayStatus = function(html, spinner) {
   app.message = html;
+  app.messageSpinner = spinner || false;
 };
 
 var stackCreated = function(stack) {
-  var message = "<p>Stack Created!</p>\n";
+  var message = "Stack Created!";
   displayStatus(message);
 };
 
 var stackDeleted = function(status) {
   stack.clearOutputs();
-  displayStatus("Stack Deleted! " + status);
+  displayStatus("Stack Deleted!");
 };
 
 
@@ -64,11 +68,11 @@ var pollForDeletion = function() {
 };
 
 var createStack = function() {
-  displayStatus("Requesting New VM..");
+  displayStatus("Requesting New VM..", true);
   $request = $.post('/stacks');
   $request.done(function(data) {
     asif = data;
-    displayStatus("Creating New VM...");
+    displayStatus("Creating New VM...", true);
     pollForCreation();
   });
   $request.fail(function(error) {
@@ -78,11 +82,11 @@ var createStack = function() {
 };
 
 var deleteStack = function() {
-  displayStatus("Requesting to Delete VM..");
+  displayStatus("Requesting to Delete VM..", true);
   $request = $.ajax({url: '/stacks', type: 'DELETE'});
   $request.done(function(data) {
     asif = data;
-    displayStatus("Deleting VM...");
+    displayStatus("Deleting VM...", true);
     pollForDeletion();
   });
   $request.fail(function(error) {
