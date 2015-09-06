@@ -9,22 +9,21 @@ block content
     .row
       button#btnCreate.button-primary Launch VM
       button#btnDelete Delete VM
-      button#btnGetInfo Get Info
-      #dvStatus
+      #dvStatus(rv-text="app.message")
     .row
-      table.one-third.column
+      table#stackInfo.one-third.column
         thead
           tr
             th(colspan="2") Info:
         tbody
           tr
             td IP Address
-            td
+            td { outputs.WorkstationIP }
           tr
             td Username
-            td
+            td { outputs.Username }
           tr
             td Password
-            td
+            td { outputs.Password }
 
   script(type='text/javascript', src='/javascripts/index.js')

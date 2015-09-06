@@ -1,24 +1,47 @@
 var POLL_TIMEOUT = 10000;
 
-var displayStatus = function(message) {
-  $('#dvStatus').html(message);
+var app = {
+  message: ""
+};
+
+var Stack = function() {
+  var self = this;
+  self.status = "UNKNOWN"
+  self.outputs = {};
+
+  self.update = function(data) {
+    self.status = data.status;
+    $.extend(self.outputs, data.outputs);
+  };
+
+  self.clearOutputs = function() {
+    $.extend(self.outputs, {
+      WorkstationIP: null,
+      Username: null,
+      Password: null
+    });
+  };
+}
+var stack = new Stack();
+
+var displayStatus = function(html) {
+  app.message = html;
 };
 
 var stackCreated = function(stack) {
   var message = "<p>Stack Created!</p>\n";
-  message += "<p>IP: " + stack.outputs["WorkstationIP"] + "</p>";
-  message += "<p>Username: " + stack.outputs["Username"] + "</p>";
-  message += "<p>Password: " + stack.outputs["Password"] + "</p>";
   displayStatus(message);
 };
 
 var stackDeleted = function(status) {
+  stack.clearOutputs();
   displayStatus("Stack Deleted! " + status);
 };
 
 
 var pollForCreation = function() {
-  $.get('/stacks', function(stack) {
+  $.get('/stacks', function(data) {
+    stack.update(data);
     if (stack.status === "CREATE_IN_PROGRESS") {
       setTimeout(pollForCreation, POLL_TIMEOUT);
     }
@@ -29,7 +52,8 @@ var pollForCreation = function() {
 };
 
 var pollForDeletion = function() {
-  $.get('/stacks', function(stack) {
+  $.get('/stacks', function(data) {
+    stack.update(data);
     if (stack.status === "DOES_NOT_EXIST") {
       stackDeleted(status);
     }
@@ -72,7 +96,8 @@ var describeStack = function() {
   $request = $.get('/stacks');
   $request.done(function(data) {
     asif = data;
-    displayStatus(JSON.stringify(data));
+    stack.update(data);
+    displayStatus("");
   });
   $request.fail(function(error) {
     asif = error;
@@ -80,9 +105,16 @@ var describeStack = function() {
   });
 };
 
+var rivetBindings = function() {
+  rivets.bind($('#dvStatus'), {app: app});
+  rivets.bind($('#stackInfo'), {outputs: stack.outputs});
+};
+
 $(function() {
+  rivetBindings();
   $('#btnCreate').on('click', createStack);
   $('#btnDelete').on('click', deleteStack);
   $('#btnGetInfo').on('click', describeStack);
+  describeStack();
 });
 
