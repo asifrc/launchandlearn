@@ -2,16 +2,20 @@ var POLL_TIMEOUT = 10000;
 
 var app = {
   message: "",
-  messageSpinner: false
+  messageSpinner: false,
+  hideCreate: false,
+  showDelete: false
 };
 
 var Stack = function() {
   var self = this;
   self.status = "UNKNOWN"
   self.outputs = {};
+  self.exists = false;
 
   self.update = function(data) {
     self.status = data.status;
+    self.exists = (data.outputs.WorkstationIP) ? true : false;
     $.extend(self.outputs, data.outputs);
   };
 
@@ -21,6 +25,7 @@ var Stack = function() {
       Username: null,
       Password: null
     });
+    self.exists = false;
   };
 
   self.clearOutputs();
@@ -30,16 +35,17 @@ var stack = new Stack();
 var displayStatus = function(html, spinner) {
   app.message = html;
   app.messageSpinner = spinner || false;
+  app.hideCreate = stack.exists || app.messageSpinner;
+  app.showDelete = stack.exists && !app.messageSpinner;
 };
 
 var stackCreated = function(stack) {
-  var message = "Stack Created!";
-  displayStatus(message);
+  displayStatus("");
 };
 
 var stackDeleted = function(status) {
   stack.clearOutputs();
-  displayStatus("Stack Deleted!");
+  displayStatus("");
 };
 
 
@@ -110,8 +116,8 @@ var describeStack = function() {
 };
 
 var rivetBindings = function() {
-  rivets.bind($('#dvStatus'), {app: app});
-  rivets.bind($('#stackInfo'), {outputs: stack.outputs});
+  rivets.bind($('#stackActions'), {app: app, stack: stack});
+  rivets.bind($('#stackInfo'), {stack: stack});
 };
 
 $(function() {

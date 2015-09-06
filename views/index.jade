@@ -6,26 +6,26 @@ block content
       h1= title
     .row
       p Welcome to #{title}
-    .row
-      button#btnCreate.button-primary Launch VM
-      button#btnDelete Delete VM
+    .row#stackActions
+      button#btnCreate.button-primary(rv-hide="app.hideCreate") Launch VM
+      button#btnDelete(rv-show="app.showDelete") Delete VM
       #dvStatus
         i.fa.fa-spinner.fa-pulse.fa-2x.fa-fw(rv-show="app.messageSpinner")
         { app.message }
     .row
-      table#stackInfo.one-third.column
+      table#stackInfo.one-third.column(rv-if="stack.exists")
         thead
           tr
             th(colspan="2") Info:
         tbody
           tr
             td IP Address
-            td { outputs.WorkstationIP }
+            td { stack.outputs.WorkstationIP }
           tr
             td Username
-            td { outputs.Username }
+            td { stack.outputs.Username }
           tr
             td Password
-            td { outputs.Password }
+            td { stack.outputs.Password }
 
   script(type='text/javascript', src='/javascripts/index.js')
