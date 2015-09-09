@@ -115,6 +115,10 @@ var describeStack = function() {
   });
 };
 
+var downloadRDP = function() {
+  window.location.href = "/stacks/rdp";
+};
+
 var rivetBindings = function() {
   rivets.bind($('#stackActions'), {app: app, stack: stack});
   rivets.bind($('#stackInfo'), {stack: stack});
@@ -124,7 +128,7 @@ $(function() {
   rivetBindings();
   $('#btnCreate').on('click', createStack);
   $('#btnDelete').on('click', deleteStack);
-  $('#btnGetInfo').on('click', describeStack);
+  $('#btnDownloadRDP').on('click', downloadRDP);
   describeStack();
 });
 

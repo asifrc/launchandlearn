@@ -61,7 +61,7 @@ var formatOutputs = function(outputs) {
   return formattedOutput;
 }
 
-var describeStack = function(req, res) {
+var getStack = function(cb) {
   var params = {
     "StackName": stackName,
   };
@@ -70,12 +70,38 @@ var describeStack = function(req, res) {
       status: (err) ? "DOES_NOT_EXIST" : data["Stacks"][0]["StackStatus"],
       outputs: (err) ? [] : formatOutputs(data["Stacks"][0]["Outputs"]),
     };
+    cb(stack);
+  });
+};
+
+var describeStack = function(req, res) {
+  getStack(function(stack) {
     respond(res.status(200), stack);
+  });
+};
+
+var getStackRdpFile = function(req, res, next) {
+  getStack(function(stack) {
+    if (stack.status === "DOES_NOT_EXIST") {
+      var err = new Error('Not Found');
+      err.status = 404;
+      next(err);
+    }
+    else {
+      var filename = stack.outputs["WorkstationIP"] + ".rdp";
+      var rdp = "auto connect:i:1\n";
+      rdp += "full address:s:" + stack.outputs["WorkstationIP"] + "\n";
+      rdp += "username:s:" + stack.outputs["Username"];
+      res.setHeader("Content-Type", "application/x-rdp");
+      res.setHeader("Content-disposition", "attachment; filename=" + filename);
+      res.send(rdp);
+    }
   });
 };
 
 router.post('/', createStack);
 router.delete('/', deleteStack);
 router.get('/', describeStack);
+router.get('/rdp', getStackRdpFile);
 
 module.exports = router;
