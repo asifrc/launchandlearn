@@ -6,27 +6,3 @@ block content
       h1= title
     .row
       p Welcome to #{title}
-    .row#stackActions
-      button#btnCreate.button-primary(rv-hide="app.hideCreate") Launch VM
-      button#btnDownloadRDP(rv-show="app.showDelete") Connect
-      button#btnDelete(rv-show="app.showDelete") Delete VM
-      #dvStatus
-        i.fa.fa-spinner.fa-pulse.fa-2x.fa-fw(rv-show="app.messageSpinner")
-        { app.message }
-    .row
-      table#stackInfo.one-third.column(rv-if="stack.exists")
-        thead
-          tr
-            th(colspan="2") Info:
-        tbody
-          tr
-            td IP Address
-            td { stack.outputs.WorkstationIP }
-          tr
-            td Username
-            td { stack.outputs.Username }
-          tr
-            td Password
-            td { stack.outputs.Password }
-
-  script(type='text/javascript', src='/javascripts/index.js')

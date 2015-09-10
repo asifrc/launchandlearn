@@ -28,6 +28,8 @@ var Stack = function() {
     self.exists = false;
   };
 
+  self.url = '/stacks/' + project.name;
+
   self.clearOutputs();
 }
 var stack = new Stack();
@@ -50,7 +52,7 @@ var stackDeleted = function(status) {
 
 
 var pollForCreation = function() {
-  $.get('/stacks', function(data) {
+  $.get(stack.url, function(data) {
     stack.update(data);
     if (stack.status === "CREATE_IN_PROGRESS") {
       setTimeout(pollForCreation, POLL_TIMEOUT);
@@ -62,7 +64,7 @@ var pollForCreation = function() {
 };
 
 var pollForDeletion = function() {
-  $.get('/stacks', function(data) {
+  $.get(stack.url, function(data) {
     stack.update(data);
     if (stack.status === "DOES_NOT_EXIST") {
       stackDeleted(status);
@@ -75,7 +77,7 @@ var pollForDeletion = function() {
 
 var createStack = function() {
   displayStatus("Requesting New VM..", true);
-  $request = $.post('/stacks');
+  $request = $.post(stack.url);
   $request.done(function(data) {
     asif = data;
     displayStatus("Creating New VM...", true);
@@ -89,7 +91,7 @@ var createStack = function() {
 
 var deleteStack = function() {
   displayStatus("Requesting to Delete VM..", true);
-  $request = $.ajax({url: '/stacks', type: 'DELETE'});
+  $request = $.ajax({url: stack.url, type: 'DELETE'});
   $request.done(function(data) {
     asif = data;
     displayStatus("Deleting VM...", true);
@@ -103,7 +105,7 @@ var deleteStack = function() {
 
 var describeStack = function() {
   displayStatus("Requesting to describe VM..");
-  $request = $.get('/stacks');
+  $request = $.get(stack.url);
   $request.done(function(data) {
     asif = data;
     stack.update(data);
@@ -116,7 +118,7 @@ var describeStack = function() {
 };
 
 var downloadRDP = function() {
-  window.location.href = "/stacks/rdp";
+  window.location.href = stack.url + "/rdp";
 };
 
 var rivetBindings = function() {

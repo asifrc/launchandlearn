@@ -4,6 +4,8 @@ var router = require('express').Router();
 var config = require('../config');
 var template = require('../templates/chefwindows.json');
 
+var Project = require('../models/project');
+
 var cfConfig = {
   region: "us-west-2"
 };
@@ -18,26 +20,39 @@ var respond = function(res, result) {
 };
 
 var getStackName = function(req) {
-  return appName + "-" + req.sessionID;
+  return appName + "-" + req.params.project + "-" + req.sessionID;
 };
 
 var createStack = function(req, res) {
-  var params = {
-    "StackName": getStackName(req),
-    "TemplateBody": JSON.stringify(template),
-    "Tags": [
-      {
-        "Key": "source",
-        "Value": appName
-      }
-    ]
-  };
-  cloudformation.createStack(params, function(err, data) {
+  Project.find({name: req.params.project}, function(err, project) {
+    console.log("projects", err, project);
     if (err) {
-      respond(res.status(502), err);
+      respond(res.status(404), err);
     }
     else {
-      respond(res.status(202), data);
+
+      var params = {
+        "StackName": getStackName(req),
+        "TemplateURL": project.templateUrl,
+        "Tags": [
+          {
+            "Key": "source",
+            "Value": appName
+          },
+          {
+            "Key": "llproject",
+            "Value": project.name
+          }
+        ]
+      };
+      cloudformation.createStack(params, function(err, data) {
+        if (err) {
+          respond(res.status(502), err);
+        }
+        else {
+          respond(res.status(202), data);
+        }
+      });
     }
   });
 };
@@ -102,9 +117,12 @@ var getStackRdpFile = function(req, res, next) {
   });
 };
 
-router.post('/', createStack);
-router.delete('/', deleteStack);
-router.get('/', describeStack);
-router.get('/rdp', getStackRdpFile);
+router.post('/:project', createStack);
+router.delete('/:project', deleteStack);
+router.get('/:project', describeStack);
+router.get('/:project/rdp', getStackRdpFile);
+router.get('/:project/asif', function(req, res) {
+  res.send("hi");
+});
 
 module.exports = router;

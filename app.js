@@ -13,6 +13,8 @@ var config = require('./config');
 
 var routes = require('./routes/index');
 var stacks = require('./routes/stacks');
+var projects = require('./routes/projects');
+var clients = require('./routes/clients');
 var users = require('./routes/users');
 
 var app = express();
@@ -46,6 +48,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/stacks', stacks);
+app.use('/projects', projects);
+app.use('/', clients);
 app.use('/users', users);
 
 // catch 404 and forward to error handler
