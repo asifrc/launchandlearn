@@ -9,7 +9,6 @@ var cfConfig = {
 };
 
 var appName = config.APP_NAME;
-var stackName = appName + "Test";
 
 var cloudformation = new AWS.CloudFormation(cfConfig);
 
@@ -18,10 +17,13 @@ var respond = function(res, result) {
       res.send(JSON.stringify(result));
 };
 
+var getStackName = function(req) {
+  return appName + "-" + req.sessionID;
+};
 
 var createStack = function(req, res) {
   var params = {
-    "StackName": stackName,
+    "StackName": getStackName(req),
     "TemplateBody": JSON.stringify(template),
     "Tags": [
       {
@@ -42,7 +44,7 @@ var createStack = function(req, res) {
 
 var deleteStack = function(req, res) {
   var params = {
-    "StackName": stackName,
+    "StackName": getStackName(req),
   };
   cloudformation.deleteStack(params, function(err, data) {
     if (err) {
@@ -62,9 +64,9 @@ var formatOutputs = function(outputs) {
   return formattedOutput;
 }
 
-var getStack = function(cb) {
+var getStack = function(req, cb) {
   var params = {
-    "StackName": stackName,
+    "StackName": getStackName(req),
   };
   cloudformation.describeStacks(params, function(err, data) {
     var stack = {
@@ -76,13 +78,13 @@ var getStack = function(cb) {
 };
 
 var describeStack = function(req, res) {
-  getStack(function(stack) {
+  getStack(req, function(stack) {
     respond(res.status(200), stack);
   });
 };
 
 var getStackRdpFile = function(req, res, next) {
-  getStack(function(stack) {
+  getStack(req, function(stack) {
     if (stack.status === "DOES_NOT_EXIST") {
       var err = new Error('Not Found');
       err.status = 404;
