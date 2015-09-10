@@ -4,12 +4,27 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
+
+var config = require('./config');
 
 var routes = require('./routes/index');
 var stacks = require('./routes/stacks');
 var users = require('./routes/users');
 
 var app = express();
+
+// session setup
+
+app.use(session({
+  secret: config.SECRET,
+  store: new MongoStore({
+    url: config.MONGO_URL
+  }),
+  saveUninitialized: true,
+  resave: false
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

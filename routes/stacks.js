@@ -1,13 +1,14 @@
 var AWS = require('aws-sdk');
 var router = require('express').Router();
 
+var config = require('../config');
 var template = require('../templates/chefwindows.json');
 
 var cfConfig = {
   region: "us-west-2"
 };
 
-var appName = "LaunchAndLearn";
+var appName = config.APP_NAME;
 var stackName = appName + "Test";
 
 var cloudformation = new AWS.CloudFormation(cfConfig);
