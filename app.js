@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 
+var uid = require('uid-safe');
+
 var config = require('./config');
 
 var routes = require('./routes/index');
@@ -22,6 +24,9 @@ app.use(session({
   store: new MongoStore({
     url: config.MONGO_URL
   }),
+  genid: function(req) {
+    return uid.sync(10).replace("_", "");
+  },
   saveUninitialized: true,
   resave: false
 }));
