@@ -12,6 +12,7 @@ var uid = require('uid-safe');
 var config = require('./config');
 
 var routes = require('./routes/index');
+var admin = require('./routes/admin');
 var stacks = require('./routes/stacks');
 var projects = require('./routes/projects');
 var clients = require('./routes/clients');
@@ -47,6 +48,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
+app.use('/admin', admin);
 app.use('/stacks', stacks);
 app.use('/projects', projects);
 app.use('/', clients);

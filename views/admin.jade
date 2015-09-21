@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  .container#app
+    .row
+      h1 Admin
+    .row
+      h5 Create New Project
+    .row
+      #dvStatus
+        i.fa.fa-spinner.fa-pulse.fa-2x.fa-fw(rv-show="app.messageSpinner")
+        span
+          { app.message }
+      input(type="text", placeholder="Project Name", rv-value="project.name")
+      input(type="text", placeholder="Template URL", rv-value="project.templateUrl")
+      button#btnCreate.button-primary(rv-hide="app.hideCreate") Create
+
+  script(type='text/javascript', src='/javascripts/admin.js')
