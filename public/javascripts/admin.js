@@ -6,6 +6,7 @@ var app = {
 var project = {
   name: "",
   templateUrl: "",
+  password: "",
   reset: function() {
     this.name = "";
     this.templateUrl = "";
@@ -13,13 +14,10 @@ var project = {
 };
 
 var createProject = function() {
-  $.post('/projects', project, function(data) {
-    if (data.error) {
-      alert(data.error);
-    }
-    else {
-      project.reset();
-    }
+  $.post('/projects', project).done(function(){
+    project.reset();
+  }).fail(function(error) {
+    alert(error.responseJSON.message);
   });
 };
 
