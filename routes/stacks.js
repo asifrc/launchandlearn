@@ -7,7 +7,7 @@ var template = require('../templates/chefwindows.json');
 var Project = require('../models/project');
 
 var cfConfig = {
-  region: "us-west-2"
+  region: "ap-southeast-1"
 };
 
 var appName = config.APP_NAME;
