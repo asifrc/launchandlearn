@@ -14,7 +14,7 @@ block content
         i.fa.fa-spinner.fa-pulse.fa-2x.fa-fw(rv-show="app.messageSpinner")
         { app.message }
     .row
-      table#stackInfo.one-third.column(rv-if="stack.exists")
+      table#stackInfo(rv-if="stack.exists")
         thead
           tr
             th(colspan="2") Info:
