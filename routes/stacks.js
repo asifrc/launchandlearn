@@ -7,8 +7,9 @@ var template = require('../templates/chefwindows.json');
 var Project = require('../models/project');
 
 var cfConfig = {
-  region: "ap-southeast-1"
+  region: config.AWS_DEFAULT_REGION
 };
+console.log("Using region", cfConfig);
 
 var appName = config.APP_NAME;
 
