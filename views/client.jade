@@ -25,8 +25,8 @@ block content
             td Username
             td { stack.outputs.Username }
           tr
-            td Password
-            td { stack.outputs.Password }
+            td Instructions
+            td(rv-html="stack.outputs.Instructions")
 
   script project = !{JSON.stringify(project)};
 
